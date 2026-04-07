@@ -3,6 +3,7 @@ QA2C provides the drive code for encrypted control for the Quanser Aero 2 model.
 The code transforms dynamic controllers through various methods and then drives the system through homomorphic encryption.
 The cryptographic libraries for computational homomorphic use [OpenFHE-python](https://github.com/openfheorg/openfhe-python).
 The code use Quanser's Aero 2 model [Aero 2](https://github.com/quanser/Quanser_Academic_Resources/tree/dev-windows) Python API. 
+**Share implementation concept with [QQS3C](https://github.com/RFA0608/QQS3C)**
 
 --- 
 
