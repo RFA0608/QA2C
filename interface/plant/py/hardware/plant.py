@@ -63,7 +63,7 @@ def control_loop():
     readMode = 0
 
     # frequency of system holder and sampler
-    frequency = 50 # hz
+    frequency = 10 # hz
 
     # for scope sampling rate
     countMax = frequency / 50
