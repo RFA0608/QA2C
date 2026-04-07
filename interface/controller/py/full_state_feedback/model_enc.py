@@ -12,8 +12,8 @@ class crypto():
     def __init__(self):
         # parameter setting
         self.parameters = CCParamsBFVRNS()
-        self.parameters.SetRingDim(1024)
-        self.parameters.SetPlaintextModulus(4294008833)
+        self.parameters.SetRingDim(8192)
+        self.parameters.SetPlaintextModulus(4293918721)
         self.parameters.SetMultiplicativeDepth(2)
         self.parameters.SetSecurityLevel(SecurityLevel.HEStd_NotSet)
         
