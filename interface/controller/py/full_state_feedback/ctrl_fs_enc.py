@@ -1,7 +1,7 @@
 import tcp_protocol_client as tcc
 
 # init tcp host and port
-HOST = 'localhost'
+HOST = '172.25.32.1'
 PORT = 9999
 
 # get model description
@@ -29,7 +29,7 @@ def fs_encrypted():
     crypto_cl = model_enc.crypto()
     enc_4_fs = model_enc.enc_for_fs(crypto_cl, fs_q.H_q, fs_q.N_bar_q)
     enc_4_fs.set_level(fs_q.r, fs_q.s)
-    fs_enc = model_enc.fs_enc(crypto_cl.crypto_context, enc_4_fs.H_enc, enc_4_fs.N_bar_enc)
+    fs_enc = model_enc.fs_enc(crypto_cl.crypto_context, enc_4_fs.H_enc_row1, enc_4_fs.H_enc_row2, enc_4_fs.N_bar_enc_row1, enc_4_fs.N_bar_enc_row2)
 
     # input/output initialization
     x = np.array([[0],
