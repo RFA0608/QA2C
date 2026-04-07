@@ -41,6 +41,7 @@ You can follow same instructions [QQS3C](https://github.com/RFA0608/QQS3C).
 
 # Demonstration
 1. Quanser Interactive Labs Test:
+https://youtu.be/sjIdI3azCwo
 
 > **[INFO] Security**
 > 
