@@ -10,13 +10,18 @@ import model
 # get other tools
 import numpy as np
 
-def full_state_feedback():
+def fs_quantized():
     # set simulation(this section have to set same with plant)
     sampling_time = 0.02
     run_signal = True
 
     # get model from model description file
     fs = model.fs(sampling_time)
+    fs_q = model.fs_q(fs.K, fs.N_bar)
+
+    # set quantized level and quantize matrix
+    fs_q.set_level(1000, 1000)
+    fs_q.quantize()
 
     # input/output initialization
     x = np.array([[0],
@@ -76,15 +81,15 @@ def full_state_feedback():
                 tccp.send(ref[1, 0])
 
                 # state update and generate output
-                fs.state_update(x)
-                u = fs.get_output(ref)
+                # fs.state_update(x)
+                u = fs_q.get_output(x, ref)
             elif signal == "end":
                 # end of loop signal get
                 run_signal = False
                 break
 
 def main():
-    full_state_feedback()
+    fs_quantized()
 
 if __name__ == "__main__":
     main()

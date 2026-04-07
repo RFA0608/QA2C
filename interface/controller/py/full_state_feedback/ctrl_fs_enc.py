@@ -6,17 +6,30 @@ PORT = 9999
 
 # get model description
 import model
+import model_enc
 
 # get other tools
 import numpy as np
+import time
 
-def full_state_feedback():
+def fs_encrypted():
     # set simulation(this section have to set same with plant)
     sampling_time = 0.02
     run_signal = True
 
     # get model from model description file
     fs = model.fs(sampling_time)
+    fs_q = model.fs_q(fs.K, fs.N_bar)
+
+    # set quantized level and quantize matrix
+    fs_q.set_level(1000, 1000)
+    fs_q.quantize()
+
+    # get crypto model from model_enc
+    crypto_cl = model_enc.crypto()
+    enc_4_fs = model_enc.enc_for_fs(crypto_cl, fs_q.H_q, fs_q.N_bar_q)
+    enc_4_fs.set_level(fs_q.r, fs_q.s)
+    fs_enc = model_enc.fs_enc(crypto_cl.crypto_context, enc_4_fs.H_enc, enc_4_fs.N_bar_enc)
 
     # input/output initialization
     x = np.array([[0],
@@ -48,6 +61,9 @@ def full_state_feedback():
             _, signal = tccp.recv()
 
             if signal == "run":
+                # start clock set
+                stc = time.perf_counter_ns()
+
                 # get plant output
                 _, x0 = tccp.recv()
                 _, x1 = tccp.recv()
@@ -75,16 +91,34 @@ def full_state_feedback():
                 tccp.send(ref[0, 0])
                 tccp.send(ref[1, 0])
 
-                # state update and generate output
-                fs.state_update(x)
-                u = fs.get_output(ref)
+                # state estimation on plant and encryption
+                # fs.state_update(x)
+                x_enc, ref_enc = enc_4_fs.enc_signal(x, ref)
+
+                ## controller description ##
+                # ------------------------------------------------ #
+                # get control input on ciphertext space
+                enc_u0, enc_u1 = fs_enc.get_output(x_enc, ref_enc)
+                # ------------------------------------------------ #
+
+                int_u0 = enc_4_fs.dec_signal(enc_u0)
+                int_u1 = enc_4_fs.dec_signal(enc_u1)
+
+                u[0, 0] = float(int_u0) / enc_4_fs.r / enc_4_fs.s
+                u[1, 0] = float(int_u1) / enc_4_fs.r / enc_4_fs.s
+
+                # end clock set
+                edc = time.perf_counter_ns()
+                duration = (edc - stc) / 1000000
+                print(f"loop time: {duration}ms")
+
             elif signal == "end":
                 # end of loop signal get
                 run_signal = False
                 break
 
 def main():
-    full_state_feedback()
+    fs_encrypted()
 
 if __name__ == "__main__":
     main()

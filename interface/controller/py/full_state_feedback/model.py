@@ -74,4 +74,51 @@ class fs:
         self.u = -self.K @ self.x + self.N_bar @ ref
         
         return self.u
+    
+class fs_q():
+    # quantized level s for matrix and r for signal
+    s = 1
+    r = 1
+
+    # gain of x
+    H = np.zeros((2,4), dtype=float)
+    H_q = np.zeros((2,4), dtype=int)
+
+    # feedforward
+    N_bar = np.zeros((2,2), dtype=float)
+    N_bar_q = np.zeros((2,2), dtype=int)
+
+    # input/output
+    x_q = np.zeros((4,1), dtype=int)
+    x = np.zeros((4,1), dtype=float)
+    u_q = np.zeros((2,1), dtype=int)
+    u = np.zeros((2,1), dtype=float)
+    ref_q = np.zeros((2,1), dtype=int)
+    ref = np.zeros((2,1), dtype=float)
+
+    def __init__(self, H, N_bar):
+        self.H = H
+        self.N_bar = N_bar
+
+    def set_level(self, r, s):
+        self.r = r
+        self.s = s
+
+    def quantize(self):
+        self.H_q = (self.s * self.H).astype(int)
+        self.N_bar_q = (self.s * self.N_bar).astype(int)
+
+    def get_output(self, x, ref):
+        for i in range(4):
+            self.x_q[i, 0] = int(self.r * x[i, 0])
+        
+        for i in range(2):
+            self.ref_q[i, 0] = int(self.r * ref[i, 0]);
+
+        self.u_q = -self.H_q @ self.x_q + self.N_bar_q @ self.ref_q
+        
+        self.u[0,0] = float(self.u_q[0, 0]) / self.r / self.s
+        self.u[1,0] = float(self.u_q[1, 0]) / self.r / self.s
+
+        return self.u
         
