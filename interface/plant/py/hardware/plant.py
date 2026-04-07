@@ -134,9 +134,6 @@ def control_loop():
 
                 timeStamp = elapsed_time()
 
-            myAero.write_voltage(0.0, 0.0)
-            if(hardware):
-                myAero.terminate()
             tcsp.send("end")
 
 def main():
