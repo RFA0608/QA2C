@@ -40,7 +40,7 @@ int main()
 
     // simulation_time is total run time, sample_time is sample_time.
     int simulation_time = 30;
-    double sample_time = 0.02;
+    double sample_time = 0.1;
     t_timeout interval;
     t_timeout timeout;
     timeout_get_timeout(&interval, sample_time);
