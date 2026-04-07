@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tcp_protocol"
+version = "0.1.0"
+description = "TCP/IP simplified transaction description"
+authors = [
+    {name = "Jeong Mingyu", email = "jeongmingyu@cdslst.kr"}
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools]
+py-modules = ["tcp_protocol_client", "tcp_protocol_server"]
