@@ -12,7 +12,7 @@ class crypto():
     def __init__(self):
         # parameter setting
         self.parameters = CCParamsBFVRNS()
-        self.parameters.SetRingDim(4096)
+        self.parameters.SetRingDim(1024)
         self.parameters.SetPlaintextModulus(4294008833)
         self.parameters.SetMultiplicativeDepth(2)
         self.parameters.SetSecurityLevel(SecurityLevel.HEStd_NotSet)
@@ -61,8 +61,10 @@ class enc_for_fs():
     N_bar_q = np.zeros((2,2), dtype=int)
 
     # encrypted gain
-    H_enc = any
-    N_bar_enc = any
+    H_enc_row1 = any
+    H_enc_row2 = any
+    N_bar_enc_row1 = any
+    N_bar_enc_row2 = any
 
     # encrypted state
     x_enc = any
@@ -76,17 +78,19 @@ class enc_for_fs():
         vec_for_H = [-1, -1, -1, -1]
         vec_for_N_bar = [-1, -1]
         # encryption H_q value only one packing
-        for i in range(2):
-            for j in range(4):
-                vec_for_H[j] = H_q[i, j]
-            
-            self.H_enc[i] = self.crypto_class.enc_vector(vec_for_H)
+        for j in range(4):
+            vec_for_H[j] = H_q[0, j]
+        self.H_enc_row1 = self.crypto_class.enc_vector(vec_for_H)
+        for j in range(4):
+            vec_for_H[j] = H_q[1, j]
+        self.H_enc_row2 = self.crypto_class.enc_vector(vec_for_H)
 
-        for i in range(2):
-            for j in range(2):
-                vec_for_N_bar[j] = N_bar_q[i, j]
-            
-            self.H_enc[i] = self.crypto_class.enc_vector(vec_for_N_bar)
+        for j in range(2):
+            vec_for_N_bar[j] = N_bar_q[0, j]
+        self.N_bar_enc_row1 = self.crypto_class.enc_vector(vec_for_N_bar)
+        for j in range(2):
+            vec_for_N_bar[j] = N_bar_q[1, j]
+        self.N_bar_enc_row2 = self.crypto_class.enc_vector(vec_for_N_bar)
         
 
     def set_level(self, r, s):
@@ -117,33 +121,44 @@ class fs_enc():
     crypto_context = openfhe.CryptoContext 
     
     # encrypted gain
-    H_enc = any
-    N_bar_enc = any
+    H_enc_row1 = any
+    H_enc_row2 = any
+    N_bar_enc_row1 = any
+    N_bar_enc_row2 = any
 
-    def __init__(self, crypto_context, H_enc, N_bar_enc):
+    def __init__(self, crypto_context, H_enc_row1, H_enc_row2, N_bar_enc_row1, N_bar_enc_row2):
         self.crypto_context = crypto_context
-        self.H_enc = H_enc
-        self.N_bar_enc = N_bar_enc
+        self.H_enc_row1 = H_enc_row1
+        self.H_enc_row2 = H_enc_row2
+        self.N_bar_enc_row1 = N_bar_enc_row1
+        self.N_bar_enc_row2 = N_bar_enc_row2
 
     def get_output(self, x_enc, ref_enc):
-        ciphertext_mul = any
+        ciphertext_mul_00 = any
+        ciphertext_mul_01 = any
+        ciphertext_mul_10 = any
+        ciphertext_mul_11 = any
 
-        ciphertext_mul[0, 0] = self.crypto_context.EvalMult(self.H_enc[0], x_enc)
-        ciphertext_mul[0, 1] = self.crypto_context.EvalMult(self.H_enc[1], x_enc)
-        ciphertext_mul[1, 0] = self.crypto_context.EvalMult(self.N_bar_enc[0], ref_enc)
-        ciphertext_mul[1, 1] = self.crypto_context.EvalMult(self.N_bar_enc[1], ref_enc)
+        ciphertext_mul_00 = self.crypto_context.EvalMult(self.H_enc_row1, x_enc)
+        ciphertext_mul_01 = self.crypto_context.EvalMult(self.H_enc_row2, x_enc)
+        ciphertext_mul_10 = self.crypto_context.EvalMult(self.N_bar_enc_row1, ref_enc)
+        ciphertext_mul_11 = self.crypto_context.EvalMult(self.N_bar_enc_row2, ref_enc)
 
-        ciphertext_rot = any
-        ciphertext_result = any
-        ciphertext_rot[0] = self.crypto_context.EvalAdd(ciphertext_mul[0, 0], ciphertext_mul[1, 0])
-        ciphertext_result[0] = self.crypto_context.EvalAdd(ciphertext_mul[0, 0], ciphertext_mul[1, 0])
-        ciphertext_rot[1] = self.crypto_context.EvalAdd(ciphertext_mul[0, 1], ciphertext_mul[1, 1])
-        ciphertext_result[1] = self.crypto_context.EvalAdd(ciphertext_mul[0, 1], ciphertext_mul[1, 1])
+        ciphertext_rot_0 = any
+        ciphertext_rot_1 = any
+        ciphertext_result_0 = any
+        ciphertext_result_1 = any
+        ciphertext_rot_0 = self.crypto_context.EvalAdd(ciphertext_mul_00, ciphertext_mul_10)
+        ciphertext_result_0 = self.crypto_context.EvalAdd(ciphertext_mul_00, ciphertext_mul_10)
+        ciphertext_rot_1 = self.crypto_context.EvalAdd(ciphertext_mul_01, ciphertext_mul_11)
+        ciphertext_result_1 = self.crypto_context.EvalAdd(ciphertext_mul_01, ciphertext_mul_11)
 
-        for i in range(2):
-            for j in range(3):
-                ciphertext_rot[i] = self.crypto_context.EvalRotate(ciphertext_rot[i], 1)
-                ciphertext_result[i] = self.crypto_context.EvalAdd(ciphertext_result[i], ciphertext_rot[i])
 
-        return ciphertext_result[0], ciphertext_result[1]
+        for j in range(3):
+            ciphertext_rot_0 = self.crypto_context.EvalRotate(ciphertext_rot_0, 1)
+            ciphertext_result_0 = self.crypto_context.EvalAdd(ciphertext_result_0, ciphertext_rot_0)
+            ciphertext_rot_1 = self.crypto_context.EvalRotate(ciphertext_rot_1, 1)
+            ciphertext_result_1 = self.crypto_context.EvalAdd(ciphertext_result_1, ciphertext_rot_1)
+
+        return ciphertext_result_0, ciphertext_result_1
     
