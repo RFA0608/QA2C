@@ -14,7 +14,7 @@ import time
 
 def fs_encrypted():
     # set simulation(this section have to set same with plant)
-    sampling_time = 0.02
+    sampling_time = 0.1
     run_signal = True
 
     # get model from model description file
