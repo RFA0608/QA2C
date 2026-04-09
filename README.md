@@ -33,7 +33,7 @@ The interfacing code for the Python simulator and the actual hardware, correspon
 The actual device consists of a single file, "plant.py" in "interface/plant/py/hardware".
 
 ### Controller description
-This code Just simple example of encrypted controller with full state feedback.
+This code Just simple example of encrypted controller with full state feedback. (Observer form and their family form like ARX and integer matrix are not ready yet)
 
 ## How to use
 It explains the preparations before use, how to use the Ouanser Interactive Labs, and how to use the actual hardware.
