@@ -61,15 +61,6 @@ This project utilizes code from several open-source projects. We express our gra
 
 * **Quanser Academic Resources**
     * Licensed unser the [BSD 3-Clause License](https://github.com/quanser/Quanser_Academic_Resources/blob/dev-windows/LICENSE)
-      
-* **Lattigo (v6)**
-    * Licensed under the [Apache License 2.0](https://github.com/tuneinsight/lattigo/blob/main/LICENSE)
-
-* **Microsoft SEAL**
-    * Licensed under the [MIT License](https://github.com/microsoft/SEAL/blob/main/LICENSE)
-
-* **CDSL-EncryptedControl**
-    * Licensed under the [MIT License](https://github.com/CDSL-EncryptedControl/CDSL/blob/main/LICENSE)
 
 * **OpenFHE (Python)**
     * Licensed under the [BSD 2-Clause License](https://github.com/openfheorg/openfhe-python/blob/main/LICENSE)
