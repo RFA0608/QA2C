@@ -64,6 +64,9 @@ If you need help or explanation while using this library, please send me an emai
 
 Provided by SEOULTECH CDSL.
 
+# Advanced
+You can see [Encrypted ILC](https://github.com/lsw23101/Encrypted_ILC) that use large packing slot with iterative learning control.
+
 # Licenses & Acknowledgements
 This project utilizes code from several open-source projects. We express our gratitude to their developers. The licenses for these dependencies are listed below.
 
